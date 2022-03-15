@@ -1,4 +1,4 @@
-# Inerview Question - assignment
+# Interview Question - assignment
 
 we are testing creating a new web api return in .Net 6 to return a simple wordle repository 
 
