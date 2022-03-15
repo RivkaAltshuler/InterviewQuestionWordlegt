@@ -4,6 +4,9 @@ we are testing creating a new web api return in .Net 6 to return a simple wordle
 
 The project is written in C# .Net 6 running WEB asp.net web api
 
+How do you do a Wordle?
+
+Wordle is simple: You have six chances to guess the day's secret five-letter word. Type in a word as a guess, and the game tells you which letters are or aren't in the word. The aim is to figure out the secret word with the fewest guesses.
 ## what we need
 
 working in WordleController.cs file
