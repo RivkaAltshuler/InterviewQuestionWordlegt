@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Caching.Memory;
 
 namespace src.Controllers
 {
@@ -8,10 +9,12 @@ namespace src.Controllers
     public class WordleController : ControllerBase
     {
         WordleRepository _WordleRepository;
+        private readonly IMemoryCache _memoryCache;
 
-        public WordleController(WordleRepository wordleRepository)
+        public WordleController(WordleRepository wordleRepository, IMemoryCache memoryCache)
         {
             _WordleRepository = wordleRepository;
+            _memoryCache = memoryCache;
         }
 
         /// <summary>
@@ -33,6 +36,7 @@ namespace src.Controllers
         //What to add 
         //the function should get customer identifier (could be anything)
         //this will be used in allow only 6 guess
+        //Cache example in WordleRepository
 
 
         //function (not get) to start game
@@ -50,6 +54,6 @@ namespace src.Controllers
 
         //all function should have validation + correct http status to return
         // 200, 403 if there is an error
-        
+
     }
 }

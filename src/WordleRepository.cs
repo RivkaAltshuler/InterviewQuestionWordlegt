@@ -1,4 +1,5 @@
-﻿using System.Linq.Expressions;
+﻿using Microsoft.Extensions.Caching.Memory;
+using System.Linq.Expressions;
 
 namespace src
 {
@@ -6,10 +7,12 @@ namespace src
     {
         private List<string> words;
         private string CurrentWord = string.Empty;
-        public WordleRepository()
+        private readonly IMemoryCache _memoryCache;
+        public WordleRepository(IMemoryCache memoryCache)
         {
             words = new List<string>();
             FillItems();
+            _memoryCache = memoryCache;
         }
 
         /// <summary>
@@ -18,9 +21,41 @@ namespace src
         /// <returns></returns>
         public bool CreateWordle()
         {
-            var rnd = new Random();
-            CurrentWord = words.Where(x => x.Length == 5).OrderBy(x => rnd.Next()).FirstOrDefault();
+            //Example of Saving in Cache
+
+            var word = _memoryCache.Get<string>("word");
+            if (word == null)
+            {
+                var rnd = new Random();
+                CurrentWord = words.Where(x => x.Length == 5).OrderBy(x => rnd.Next()).FirstOrDefault();
+
+                var cacheEntryOptions = new MemoryCacheEntryOptions()
+                    .SetSlidingExpiration(TimeSpan.FromHours(3));
+
+                _memoryCache.Set<string>("word", CurrentWord, cacheEntryOptions);
+            }
+            else
+            {
+                return true;
+            }
             return true;
+        }
+
+        private string GetCurrentWord()
+        {
+            var word = _memoryCache.Get<string>("word");
+            if (word == null)
+            {
+                var rnd = new Random();
+                CurrentWord = words.Where(x => x.Length == 5).OrderBy(x => rnd.Next()).FirstOrDefault();
+                word = CurrentWord;
+                var cacheEntryOptions = new MemoryCacheEntryOptions()
+                    .SetSlidingExpiration(TimeSpan.FromHours(3));
+
+                _memoryCache.Set<string>("word", CurrentWord, cacheEntryOptions);
+            }
+           
+            return word;
         }
 
         /// <summary>
@@ -43,10 +78,10 @@ namespace src
         public string CheckWord(string TestWord)
         {
             //code to check here
-         
-            var rtn = new char[5] { '0', '0','0','0','0'};
-          
-            if (!string.IsNullOrEmpty(TestWord) && !string.IsNullOrEmpty(CurrentWord))
+
+            var rtn = new char[5] { '0', '0', '0', '0', '0' };
+
+            if (!string.IsNullOrEmpty(TestWord) && !string.IsNullOrEmpty(GetCurrentWord()))
             {
                 TestWord = TestWord.ToLower();
                 if (TestWord.Length == 5)
@@ -61,7 +96,7 @@ namespace src
                         marked = false;
                         //naive
                         for (int j = 0; j < CurrentArray.Length; j++)
-                        {                          
+                        {
                             var c = CurrentArray[j];
                             if (t == c)
                             {
@@ -77,13 +112,13 @@ namespace src
                                     //check if letter is marked (only once)
                                     rtn[i] = '1';
                                 }
-                               
+
                             }
                         }
                     }
                 }
             }
-          
+
             return string.Join("", rtn);
         }
 
