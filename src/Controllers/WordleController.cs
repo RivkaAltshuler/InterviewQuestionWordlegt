@@ -62,7 +62,7 @@ namespace src.Controllers
         [HttpPost("api/Wordle/CheckWord")]
         public async Task<ActionResult> CheckWord(string word)
         {
-            var response = _WordleRepository.IsAWord( new string(word));
+            var response = _WordleRepository.IsAWord(word);
 
             return Ok(response);
         }
@@ -96,7 +96,7 @@ namespace src.Controllers
             if (guessesLeft == 0)
                 return Forbid();
 
-            var response = _WordleRepository.CheckWord(new string(word))
+            var response = _WordleRepository.CheckWord(word)
                 .ToCharArray()
                 .Select(LetterGuessResponseFactory.Create)
                 .ToArray();
